@@ -28,7 +28,7 @@ public class ServerImage extends JFrame implements KeyListener {
         if (e.getKeyCode()
                 == KeyEvent.VK_ESCAPE) {
             System.out.println("La touche Esc a été pressée !");
-            this.escape = true;
+            //this.escape = true;
         }
     }
 
