@@ -10,10 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class ServerImage extends JFrame implements KeyListener {
 
@@ -81,5 +78,23 @@ public class ServerImage extends JFrame implements KeyListener {
         }
         socket.close();
         serverSocket.close();
+    }
+
+    private String readMessage(Socket socket) throws IOException {
+        String message = "";
+        InputStream in = socket.getInputStream();
+        message = Arrays.toString(in.readAllBytes());
+        return message;
+    }
+
+    private HashMap<String, String> getCommandes(String message){
+        HashMap<String, String> commandes = new HashMap<>();
+        String[] commandesLines = message.split(";");
+        Arrays.stream(commandesLines).forEach(v -> commandes.put(v.split(":")[0], v.split(":")[1]));
+        return commandes;
+    }
+
+    private String[] getIds(HashMap<String, String> commandes ){
+        return commandes;
     }
 }

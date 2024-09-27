@@ -23,8 +23,10 @@ public class ClientImage extends Thread {
     public ClientImage() {
         try {
             this.socketImage = new Socket(ip, port);
+            this.sendMessage("identity:"+identity+";type:sender;");
+
             this.socketReadMessage = new Socket(ip, port);
-            this.sendMessage("identity:"+identity);
+            this.sendMessage("identity:"+identity+";type:reader;");
 
         } catch (IOException e) {
             logger.severe(e.getMessage());
