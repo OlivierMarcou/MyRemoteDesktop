@@ -1,9 +1,7 @@
 package org.example;
 
-import java.awt.Robot;
-import java.awt.AWTException;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -31,7 +29,9 @@ public class Main {
                 throw new RuntimeException(e);
             }
         });
-         Thread threadLecteur = new Thread(() -> {
+
+
+        Thread threadLecteur = new Thread(() -> {
              if (User32.INSTANCE.GetAsyncKeyState(VK_SPACE) < 0) {
                  running=false;
                  System.out.println("La touche Espace est pressée");

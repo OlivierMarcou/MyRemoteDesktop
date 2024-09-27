@@ -1,14 +1,19 @@
 package fr.aikane;
 
-import java.awt.*;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Date;
-import javax.imageio.ImageIO;
-import javax.swing.*;
+import java.util.HashMap;
+import java.util.List;
 
 public class ServerImage extends JFrame implements KeyListener {
 
@@ -28,27 +33,36 @@ public class ServerImage extends JFrame implements KeyListener {
         if (e.getKeyCode()
                 == KeyEvent.VK_ESCAPE) {
             System.out.println("La touche Esc a été pressée !");
-            //this.escape = true;
+            this.escape = true;
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {}
 
-    public static void main(String[] args) throws IOException, AWTException {
+    private ServerSocket serverSocket;
+    private HashMap<String,Socket> socketList = new HashMap<>();
+
+    public static void main(String[] args) throws IOException{
         ServerImage serverImage = new ServerImage();
         serverImage.run();
     }
-    public void run() throws IOException {
+    public void init() throws IOException {
 
-        ServerSocket serverSocket = new ServerSocket(1234);
+        this.serverSocket = new ServerSocket(1234);
         System.out.println("Serveur en attente de connexion...");
-
-        Socket socket = serverSocket.accept();
 
         JLabel screen = new JLabel();
         this.add(screen);
         this.setVisible(true);
+        this.run();
+
+    }
+    public void run() throws IOException {
+
+        Socket socket = serverSocket.accept();
+        String Identity = this.readMessage(socket);
+        socketList.put(identity, socket);
         while (!escape) {
             System.out.println("Client connecté");
 
