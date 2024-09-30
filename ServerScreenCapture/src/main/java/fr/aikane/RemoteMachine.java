@@ -22,25 +22,15 @@ public class RemoteMachine extends JFrame implements KeyListener {
     private  static boolean escape = false;
 
     private String identity;
-    private Socket socketReader;
-    private Socket socketSender;
+    private Socket socket;
 
-    public RemoteMachine(String identity) throws IOException {
-        this.identity = identity;
-        this.init();
-    }
 
     public RemoteMachine(Socket socket) throws IOException {
         HashMap<String, String> commandes = this.getCommandes(this.readMessage(socket));
         String[] identity = this.getIds(commandes);
         socket.close();
-
         this.identity = identity[0];
-        if(identity[1].equals(TYPE_SENDER))
-            this.socketSender = socket;
-
-        if(identity[1].equals(TYPE_READER))
-            this.socketReader = socket;
+            this.socket = socket;
         this.init();
     }
 
@@ -52,24 +42,42 @@ public class RemoteMachine extends JFrame implements KeyListener {
         JLabel screen = new JLabel();
         this.add(screen);
         this.setVisible(true);
-        Thread image = new Thread(){
-        while (!escape) {
-                System.out.println("Client connecté");
+        Thread thread = new Thread(){
+            public void run() {
+                while (!escape) {
+                    InputStream is = null;
+                    try {
+                        is = socket.getInputStream();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    //  OutputStream os = new FileOutputStream("image_recu_" + (new Date()).getTime() + ".png");
+                    BufferedImage image = null;
+                    try {
+                        image = ImageIO.read(is);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    ImageIcon icone = new ImageIcon(image);
+                    screen.setIcon(icone);
+                    screen.repaint();
+                    setSize(image.getWidth(), image.getHeight());
+                    try {
+                        ImageIO.write(image, "jpg", new File("img" + (new Date()).getTime() + ".jpg"));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
 
-                InputStream is = socketReader.getInputStream();
-                //  OutputStream os = new FileOutputStream("image_recu_" + (new Date()).getTime() + ".png");
-
-                BufferedImage image = ImageIO.read(is);
-                ImageIcon icone = new ImageIcon(image);
-                screen.setIcon(icone);
-                screen.repaint();
-                setSize(image.getWidth(), image.getHeight());
-                ImageIO.write(image , "jpg", new File("img"+(new Date()).getTime()+".jpg"));
-
-                is.close();
-                repaint();
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    repaint();
+                }
             }
         };
+        thread.start();
     }
 
 
@@ -88,14 +96,9 @@ public class RemoteMachine extends JFrame implements KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {}
 
-    public void setSocketReader(Socket socketReader) {
-        this.socketReader = socketReader;
+    public void setSocket(Socket socket) {
+        this.socket = socket;
     }
-
-    public void setSocketSender(Socket socketSender) {
-        this.socketSender = socketSender;
-    }
-
 
     private String readMessage(Socket socket) throws IOException {
         String message = "";
@@ -118,5 +121,13 @@ public class RemoteMachine extends JFrame implements KeyListener {
         ids[0] = commandes.get(IDENTITY);
         ids[1] = commandes.get(COMANDE_TYPE);
         return ids;
+    }
+
+    public String getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
     }
 }

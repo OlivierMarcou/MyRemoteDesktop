@@ -30,16 +30,15 @@ public class Main {
             }
         });
 
-
-        Thread threadLecteur = new Thread(() -> {
-             if (User32.INSTANCE.GetAsyncKeyState(VK_SPACE) < 0) {
-                 running=false;
-                 System.out.println("La touche Espace est pressée");
-             }
-        });
+//        Thread threadLecteur = new Thread(() -> {
+//             if (User32.INSTANCE.GetAsyncKeyState(VK_SPACE) < 0) {
+//                 running=false;
+//                 System.out.println("La touche Espace est pressée");
+//             }
+//        });
 
         // Démarrage du thread
-        threadLecteur.start();
+//        threadLecteur.start();
         while(running) {
             clientImage.sendImage(cap.capture(0));
             sleep(1000);
@@ -48,11 +47,7 @@ public class Main {
     }
     public static void  deplacerSouris() throws AWTException {
         Robot robot = new Robot();
-
         // Déplacement du curseur à la position (500, 300)
         robot.mouseMove(500, 300);
-
     }
-
-
 }

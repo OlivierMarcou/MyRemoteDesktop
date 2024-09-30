@@ -14,20 +14,17 @@ public class ClientImage extends Thread {
 
     Logger logger = Logger.getLogger(ClientImage.class.getName());
 
+    private final double identity = (Math.random()*1000000000);
+
     private static final int port = 1234;
     private static final String ip = "localhost" ;
 
     private Socket socketImage;
-    private Socket socketReadMessage;
 
     public ClientImage() {
         try {
             this.socketImage = new Socket(ip, port);
-            this.sendMessage("identity:"+identity+";type:sender;");
-
-            this.socketReadMessage = new Socket(ip, port);
-            this.sendMessage("identity:"+identity+";type:reader;");
-
+            this.sendMessage(""+identity);
         } catch (IOException e) {
             logger.severe(e.getMessage());
         }
@@ -51,8 +48,8 @@ public class ClientImage extends Thread {
         byte[] imageData = baos.toByteArray();
 
         OutputStream os = socketImage.getOutputStream();
-        os.write("image".getBytes(StandardCharsets.UTF_8));
-        os.flush();
+//        os.write(identifierSender.getBytes(StandardCharsets.UTF_8));
+//        os.flush();
         os.write(imageData);
         os.flush();
 
@@ -71,28 +68,20 @@ public class ClientImage extends Thread {
     }
     public String readMessage() throws IOException {
         String commandes = "";
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(this.socketReadMessage.getInputStream()));
-
+        BufferedReader in = new BufferedReader(new InputStreamReader(this.socketImage.getInputStream()));
         String ligne;
         while ((ligne = in.readLine()) != null) {
             commandes += ligne +"\r";
         }
-
         in.close();
-
         return commandes;
     }
 
-    private final double identity = (Math.random()*1000000000);
 
     public void sendMessage(String message) throws IOException {
-        OutputStream os = this.socketReadMessage.getOutputStream();
-
-
+        OutputStream os = this.socketImage.getOutputStream();
         os.write((message).getBytes(StandardCharsets.UTF_8));
         os.flush();
-
         os.close();
     }
 }
