@@ -51,8 +51,10 @@ public class ServerImage {
             id += c;
             c = Character.toString(in.read());
         }
-        if(remoteClients != null && remoteClients.containsKey(id))
+        if(remoteClients != null && remoteClients.containsKey(id)) {
+            remoteClients.get(id).setSocket(socket);
             remoteClients.get(id).writeImage(in);
+        }
         else{
             RemoteMachine remoteMachine =new RemoteMachine(socket,id);
             remoteMachine.writeImage(in);
