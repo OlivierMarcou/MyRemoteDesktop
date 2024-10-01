@@ -18,17 +18,46 @@ public class Main {
     public static void main(String [] args) throws IOException, AWTException, InterruptedException {
 //        SimpleDateFormat sd = new SimpleDateFormat(".yyyy-MM-dd.");
 //        System.out.println(sd.format(new Date()));
-        deplacerSouris() ;
+       // deplacerSouris() ;
         ClientImage clientImage = new ClientImage();
-        CaptureEcran cap = new CaptureEcran();
-        List<BufferedImage> images = cap.captureAll();
-        images.forEach(v -> {
-            try {
-                clientImage.sendImage(v);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        Thread captureThread = new Thread(){
+            public void run(){
+                CaptureEcran cap = new CaptureEcran();
+                while (true){
+                    while(running) {
+                        try {
+                            clientImage.getSocketImage();
+                            clientImage.sendImage(cap.capture(0));
+                            sleep(1000);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } catch (AWTException e) {
+                            throw new RuntimeException(e);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+
+                }
             }
-        });
+        };
+
+
+        Thread messageThread = new Thread(){
+            public void run(){
+                while (true){
+                    try {
+                        System.out.println(clientImage.readMessage());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        };
+        captureThread.start();
+      //  messageThread.start();
+    }
 
 //        Thread threadLecteur = new Thread(() -> {
 //             if (User32.INSTANCE.GetAsyncKeyState(VK_SPACE) < 0) {
@@ -39,12 +68,8 @@ public class Main {
 
         // Démarrage du thread
 //        threadLecteur.start();
-        while(running) {
-            clientImage.sendImage(cap.capture(0));
-            sleep(1000);
-        }
       //  clientImage.close();
-    }
+
     public static void  deplacerSouris() throws AWTException {
         Robot robot = new Robot();
         // Déplacement du curseur à la position (500, 300)

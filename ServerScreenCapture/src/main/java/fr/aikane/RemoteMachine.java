@@ -14,23 +14,22 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class RemoteMachine extends JFrame implements KeyListener {
-
+    private final double identity = (Math.random()*1000000000);
+    public String getIdentity(){
+        return String.valueOf(identity);
+    }
     public static final String IDENTITY = "identity";
     public static final String COMANDE_TYPE = "type";
     public static final String TYPE_SENDER = "sender";
     public static final String TYPE_READER = "reader";
     private  static boolean escape = false;
 
-    private String identity;
     private Socket socket;
 
 
     public RemoteMachine(Socket socket) throws IOException {
-        HashMap<String, String> commandes = this.getCommandes(this.readMessage(socket));
-        String[] identity = this.getIds(commandes);
-        socket.close();
-        this.identity = identity[0];
-            this.socket = socket;
+       // HashMap<String, String> commandes = this.getCommandes(this.readMessage(socket));
+        this.socket = socket;
         this.init();
     }
 
@@ -103,7 +102,10 @@ public class RemoteMachine extends JFrame implements KeyListener {
     private String readMessage(Socket socket) throws IOException {
         String message = "";
         InputStream in = socket.getInputStream();
-        message = Arrays.toString(in.readAllBytes());
+        byte[] bytes = in.readAllBytes();
+        for(int i = 0; i< bytes.length; i++) {
+            message += Character.toChars(bytes[i]);
+        }
         return message;
     }
 
@@ -121,13 +123,5 @@ public class RemoteMachine extends JFrame implements KeyListener {
         ids[0] = commandes.get(IDENTITY);
         ids[1] = commandes.get(COMANDE_TYPE);
         return ids;
-    }
-
-    public String getIdentity() {
-        return identity;
-    }
-
-    public void setIdentity(String identity) {
-        this.identity = identity;
     }
 }
