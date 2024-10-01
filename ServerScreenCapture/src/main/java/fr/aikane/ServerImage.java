@@ -42,12 +42,14 @@ public class ServerImage {
         };
         getConnexions.start();
     }
+
     private void initRemote(Socket socket) throws IOException {
         String id = "";
         InputStream in = socket.getInputStream();
-        char c = ' ';
-        while(c != ';'){
-            id += Character.toChars(in.read());
+        String c = "";
+        while(!c.equals(";")){
+            id += c;
+            c = Character.toString(in.read());
         }
         if(remoteClients != null && remoteClients.containsKey(id))
             remoteClients.get(id).writeImage(in);

@@ -68,7 +68,6 @@ public class ClientImage {
 
         OutputStream os = socketImage.getOutputStream();
         os.write(getChecksum());
-        os.flush();
         os.write(imageData);
         os.flush();
 
