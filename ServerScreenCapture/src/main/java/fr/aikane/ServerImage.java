@@ -1,8 +1,10 @@
 package fr.aikane;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class ServerImage {
@@ -28,18 +30,10 @@ public class ServerImage {
                     Socket socketServer = null;
                     try {
                         socketServer = serverSocket.accept();
+                        System.out.println(socketServer.getInetAddress().getHostAddress());
                         System.out.println("Client connecté");
-                        RemoteMachine remoteMachine = null;
-                        remoteMachine = new RemoteMachine(socketServer);
-                        System.out.println("Client ids :" +remoteMachine.getIdentity());
-                        if(remoteClients.get(remoteMachine.getIdentity()) == null){
-                            remoteClients.put(remoteMachine.getIdentity(), remoteMachine);
-                        }else {
-                            if(socketServer != null){
-                                RemoteMachine remoteMachine1 = remoteClients.get(remoteMachine.getIdentity());
-                                remoteMachine1.setSocket(socketServer);
-                            }
-                        }
+                        ServerImage.this.initRemote(socketServer);
+
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -48,6 +42,37 @@ public class ServerImage {
         };
         getConnexions.start();
     }
+    private void initRemote(Socket socket) throws IOException {
+        String id = "";
+        InputStream in = socket.getInputStream();
+        char c = ' ';
+        while(c != ';'){
+            id += Character.toChars(in.read());
+        }
+        if(remoteClients != null && remoteClients.containsKey(id))
+            remoteClients.get(id).writeImage(in);
+        else{
+            RemoteMachine remoteMachine =new RemoteMachine(socket,id);
+            remoteMachine.writeImage(in);
+            remoteClients.put(id, remoteMachine);
 
+        }
+    }
+
+//    private HashMap<String, String> getCommandes(String message){
+//        HashMap<String, String> commandes = new HashMap<>();
+//        this.identity = message.substring(0,message.indexOf(";"));
+//        Arrays.stream(commandesLines).forEach(v -> commandes.put(v.split(":")[0], v.split(":")[1]));
+//        return commandes;
+//    }
+//
+//    private String[] getIds(HashMap<String, String> commandes ){
+//        if(!commandes.containsKey(IDENTITY))
+//            return null;
+//        String[] ids = new String[2];
+//        ids[0] = commandes.get(IDENTITY);
+//        ids[1] = commandes.get(COMANDE_TYPE);
+//        return ids;
+//    }
 
 }

@@ -3,6 +3,7 @@ package org.example;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import static java.awt.event.KeyEvent.VK_SPACE;
@@ -20,10 +21,8 @@ public class Main {
 //        System.out.println(sd.format(new Date()));
        // deplacerSouris() ;
         ClientImage clientImage = new ClientImage();
-        Thread captureThread = new Thread(){
-            public void run(){
+
                 CaptureEcran cap = new CaptureEcran();
-                while (true){
                     while(running) {
                         try {
                             clientImage.getSocketImage();
@@ -35,29 +34,15 @@ public class Main {
                             throw new RuntimeException(e);
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
+                        } catch (NoSuchAlgorithmException e) {
+                            throw new RuntimeException(e);
                         }
-                    }
-
-
                 }
-            }
-        };
 
+        }
 
-        Thread messageThread = new Thread(){
-            public void run(){
-                while (true){
-                    try {
-                        System.out.println(clientImage.readMessage());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        };
-        captureThread.start();
       //  messageThread.start();
-    }
+
 
 //        Thread threadLecteur = new Thread(() -> {
 //             if (User32.INSTANCE.GetAsyncKeyState(VK_SPACE) < 0) {

@@ -5,6 +5,8 @@ import java.net.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -14,7 +16,7 @@ public class ClientImage {
 
     Logger logger = Logger.getLogger(ClientImage.class.getName());
 
-//    private final double identity = (Math.random()*1000000000);
+    private final double identity = (Math.random()*1000000000);
 
     private static final int port = 1234;
     private static final String ip = "localhost" ;
@@ -23,7 +25,7 @@ public class ClientImage {
 
     public Socket getSocketImage() {
         try {
-            if(this.socketImage.isClosed())
+            if(this.socketImage == null || this.socketImage.isClosed())
                 this.socketImage = new Socket(ip, port);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -57,33 +59,30 @@ public class ClientImage {
         }
     }
 
-    public void sendImage(BufferedImage image) throws IOException {
+    public void sendImage(BufferedImage image) throws IOException, NoSuchAlgorithmException {
 //        this.socket = new Socket(ip, port);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(image, "png", baos);
         byte[] imageData = baos.toByteArray();
 
-
         OutputStream os = socketImage.getOutputStream();
-//        os.write(identifierSender.getBytes(StandardCharsets.UTF_8));
-//        os.flush();
+        os.write(getChecksum());
+        os.flush();
         os.write(imageData);
-       // os.flush();
+        os.flush();
 
-            BufferedReader in = null;
-                in = new BufferedReader(
-                    new InputStreamReader(
-                            socketImage.getInputStream()));
-
-
-                String line;
-                while ((line = in.readLine()) != null) {
-                    System.out.printf(
-                        " Sent from the server: %s\n",
-                        line);
-                    System.out.println(line);
-                }
+        BufferedReader in = null;
+            in = new BufferedReader(
+                new InputStreamReader(
+                        socketImage.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                System.out.printf(
+                    " Sent from the server: %s\n",
+                    line);
+                System.out.println(line);
+            }
         os.close();
     }
 
@@ -114,5 +113,16 @@ public class ClientImage {
         os.write((message).getBytes(StandardCharsets.UTF_8));
         os.flush();
         os.close();
+    }
+
+    private byte[] getChecksum() throws NoSuchAlgorithmException {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] messageDigest = md.digest((identity+"").getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : messageDigest) {
+                hexString.append(String.format("%02x", 0xff & b));
+            }
+            hexString.append(";");
+            return hexString.toString().getBytes();
     }
 }

@@ -14,9 +14,9 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class RemoteMachine extends JFrame implements KeyListener {
-    private final double identity = (Math.random()*1000000000);
+    private String identity;
     public String getIdentity(){
-        return String.valueOf(identity);
+        return identity;
     }
     public static final String IDENTITY = "identity";
     public static final String COMANDE_TYPE = "type";
@@ -27,56 +27,61 @@ public class RemoteMachine extends JFrame implements KeyListener {
     private Socket socket;
 
 
-    public RemoteMachine(Socket socket) throws IOException {
-       // HashMap<String, String> commandes = this.getCommandes(this.readMessage(socket));
+    public RemoteMachine(Socket socket, String identity) throws IOException {
+        this.identity = identity;
         this.socket = socket;
         this.init();
     }
 
+    private JLabel screen = new JLabel();
     public void init() throws IOException {
         this.setVisible(true);
         this.setSize(200,200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         addKeyListener(this);
-        JLabel screen = new JLabel();
         this.add(screen);
         this.setVisible(true);
-        Thread thread = new Thread(){
-            public void run() {
-                while (!escape) {
-                    InputStream is = null;
-                    try {
-                        is = socket.getInputStream();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    //  OutputStream os = new FileOutputStream("image_recu_" + (new Date()).getTime() + ".png");
-                    BufferedImage image = null;
-                    try {
-                        image = ImageIO.read(is);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    ImageIcon icone = new ImageIcon(image);
-                    screen.setIcon(icone);
-                    screen.repaint();
-                    setSize(image.getWidth(), image.getHeight());
-                    try {
-                        ImageIO.write(image, "jpg", new File("img" + (new Date()).getTime() + ".jpg"));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+//        Thread thread = new Thread(){
+//            public void run() {
+//                while (!escape) {
+//                    InputStream is = null;
+//                    extracted(screen);
+//                }
+//            }
+//        };
+//        thread.start();
+    }
 
-                    try {
-                        is.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    repaint();
-                }
-            }
-        };
-        thread.start();
+    public void writeImage(InputStream is) {
+
+        try {
+            is = socket.getInputStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        //  OutputStream os = new FileOutputStream("image_recu_" + (new Date()).getTime() + ".png");
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(is);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        ImageIcon icone = new ImageIcon(image);
+        this.screen.setIcon(icone);
+        this.screen.repaint();
+        setSize(image.getWidth(), image.getHeight());
+        try {
+            ImageIO.write(image, "jpg", new File("img" + (new Date()).getTime() + ".jpg"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            is.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        repaint();
     }
 
 
@@ -99,29 +104,5 @@ public class RemoteMachine extends JFrame implements KeyListener {
         this.socket = socket;
     }
 
-    private String readMessage(Socket socket) throws IOException {
-        String message = "";
-        InputStream in = socket.getInputStream();
-        byte[] bytes = in.readAllBytes();
-        for(int i = 0; i< bytes.length; i++) {
-            message += Character.toChars(bytes[i]);
-        }
-        return message;
-    }
 
-    private HashMap<String, String> getCommandes(String message){
-        HashMap<String, String> commandes = new HashMap<>();
-        String[] commandesLines = message.split(";");
-        Arrays.stream(commandesLines).forEach(v -> commandes.put(v.split(":")[0], v.split(":")[1]));
-        return commandes;
-    }
-
-    private String[] getIds(HashMap<String, String> commandes ){
-        if(!commandes.containsKey(IDENTITY))
-            return null;
-        String[] ids = new String[2];
-        ids[0] = commandes.get(IDENTITY);
-        ids[1] = commandes.get(COMANDE_TYPE);
-        return ids;
-    }
 }
