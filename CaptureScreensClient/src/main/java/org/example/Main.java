@@ -27,7 +27,7 @@ public class Main {
                         try {
                             clientImage.getSocketImage();
                             clientImage.sendImage(cap.capture(0));
-                            sleep(1000);
+                            sleep(10);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         } catch (AWTException e) {
