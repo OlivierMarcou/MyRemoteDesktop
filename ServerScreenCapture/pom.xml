@@ -49,6 +49,31 @@
       </plugin>
       <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><configuration><source>22</source><target>22</target></configuration></plugin>
 
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <configuration>
+            <finalName>mrdcserver</finalName>
+            <outputDirectory>target</outputDirectory>
+            <archive>
+              <addMavenDescriptor>true</addMavenDescriptor>
+              <manifestEntries>
+                <Application-Name>mrdcserver</Application-Name>
+                <Permissions>all-permissions</Permissions>
+                <Codebase>*</Codebase><addClasspath>true</addClasspath>
+                <Caller-Allowable-Codebase> *.arkaine.net *.aikane.fr *</Caller-Allowable-Codebase>
+              </manifestEntries>
+              <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                <mainClass>fr.aikane.ServerImage</mainClass>
+                <addClasspath>true</addClasspath>
+                <addExtensions />
+                <classpathPrefix />
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin>
     </plugins>
   </build>
   <dependencyManagement>

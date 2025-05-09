@@ -48,8 +48,9 @@ public class ServerImage extends JFrame implements KeyListener {
 
         JLabel screen = new JLabel();
         this.add(screen);
-        this.setVisible(true);
+        this.setVisible(false);
         while (!escape) {
+            deleteJpg();
             System.out.println("Client connecté");
 
             InputStream is = socket.getInputStream();
@@ -64,8 +65,43 @@ public class ServerImage extends JFrame implements KeyListener {
             is.close();
             socket = serverSocket.accept();
             this.repaint();
+            deleteJpg();
         }
+
         socket.close();
         serverSocket.close();
+    }
+
+    private static void deleteJpg() {
+        File repertoireCourant = new File(".");
+
+        // Créer un filtre pour les fichiers .jpg
+        FilenameFilter filtreJPG = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(".jpg");
+            }
+        };
+
+        // Lister tous les fichiers JPG
+        File[] fichiersJPG = repertoireCourant.listFiles(filtreJPG);
+
+        if (fichiersJPG != null && fichiersJPG.length > 0) {
+            System.out.println("Suppression des fichiers JPG :");
+            int compteur = 0;
+
+            for (File fichier : fichiersJPG) {
+                if (fichier.delete()) {
+                    System.out.println("  - Fichier supprimé : " + fichier.getName());
+                    compteur++;
+                } else {
+                    System.out.println("  - Impossible de supprimer : " + fichier.getName());
+                }
+            }
+
+            System.out.println("\nTotal: " + compteur + " fichier(s) JPG supprimé(s).");
+        } else {
+            System.out.println("Aucun fichier JPG trouvé dans le répertoire courant.");
+        }
     }
 }
