@@ -14,8 +14,8 @@ public class ServerImage extends JFrame implements KeyListener {
 
     private  static boolean escape = false;
     public ServerImage() {
-        this.setVisible(true);
-        this.setSize(200,200);
+        this.setVisible(false);
+        this.setSize(20,20);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         addKeyListener(this);
     }
