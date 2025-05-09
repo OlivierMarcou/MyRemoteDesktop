@@ -26,8 +26,8 @@ public class CaptureEcran {
         Rectangle screenRectangle = new Rectangle(screenSize);
         BufferedImage image = robot.createScreenCapture(screenRectangle);
         String filename = "capture_"+screenNumber+"_"+(new Date()).getTime()+".png";
-     //   File imageFile = new File(filename);
-     //   ImageIO.write(image, "png", imageFile);
+        File imageFile = new File(filename);
+        ImageIO.write(image, "png", imageFile);
         return image;
     }
 

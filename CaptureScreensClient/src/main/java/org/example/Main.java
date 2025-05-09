@@ -25,17 +25,13 @@ public class Main {
                 CaptureEcran cap = new CaptureEcran();
                     while(running) {
                         try {
-                            clientImage.getSocketImage();
-                            clientImage.sendImage(cap.capture(0));
-                            sleep(10);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } catch (AWTException e) {
-                            throw new RuntimeException(e);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        } catch (NoSuchAlgorithmException e) {
-                            throw new RuntimeException(e);
+                            for(BufferedImage img: cap.captureAll()){
+                                clientImage.getSocketImage();
+                                clientImage.sendImage(img);
+                            }
+                            sleep(500);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                 }
 

@@ -7,8 +7,6 @@ import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Random;
 import java.util.logging.Logger;
 
 
@@ -19,18 +17,17 @@ public class ClientImage {
     private final double identity = (Math.random()*1000000000);
 
     private static final int port = 1234;
-    private static final String ip = "localhost" ;
+    private static final String ip = "192.168.1.102" ;
 
     private static final int serverPort = 1236;
 
-    public Socket getSocketImage() {
+    public void getSocketImage() {
         try {
             if(this.socketImage == null || this.socketImage.isClosed())
                 this.socketImage = new Socket(ip, port);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-        return socketImage;
     }
 
     public void initSocketImage( ) {
@@ -61,7 +58,6 @@ public class ClientImage {
 
     public void sendImage(BufferedImage image) throws IOException, NoSuchAlgorithmException {
 //        this.socket = new Socket(ip, port);
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(image, "png", baos);
         byte[] imageData = baos.toByteArray();
@@ -83,6 +79,7 @@ public class ClientImage {
                 System.out.println(line);
             }
         os.close();
+        deleteImg();
     }
 
 //
@@ -123,5 +120,38 @@ public class ClientImage {
             }
             hexString.append(";");
             return hexString.toString().getBytes();
+    }
+
+    private static void deleteImg() {
+        File repertoireCourant = new File(".");
+
+        // Créer un filtre pour les fichiers .jpg
+        FilenameFilter filtreJPG = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(".png");
+            }
+        };
+
+        // Lister tous les fichiers JPG
+        File[] fichiersJPG = repertoireCourant.listFiles(filtreJPG);
+
+        if (fichiersJPG != null && fichiersJPG.length > 0) {
+            System.out.println("Suppression des fichiers JPG :");
+            int compteur = 0;
+
+            for (File fichier : fichiersJPG) {
+                if (fichier.delete()) {
+                    System.out.println("  - Fichier supprimé : " + fichier.getName());
+                    compteur++;
+                } else {
+                    System.out.println("  - Impossible de supprimer : " + fichier.getName());
+                }
+            }
+
+            System.out.println("\nTotal: " + compteur + " fichier(s) JPG supprimé(s).");
+        } else {
+            System.out.println("Aucun fichier JPG trouvé dans le répertoire courant.");
+        }
     }
 }

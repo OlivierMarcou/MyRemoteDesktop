@@ -1,67 +1,98 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>fr.aikane</groupId>
-  <artifactId>myRemoteDesktopServer</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>Remote Desktop Server</name>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>fr.aikane</groupId>
+    <artifactId>myRemoteDesktopServer</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>Remote Desktop Server</name>
 
-  <build>
-    <finalName>mrdc-server</finalName>
+    <build>
+        <finalName>mrdc-server</finalName>
 
-    <resources>
-      <resource>
-        <filtering>true</filtering>
-        <directory>src/main/resources</directory>
-      </resource>
-    </resources>
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
 
-    <plugins>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <configuration>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>
-                ${project.build.directory}/libs
-              </outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><configuration><source>22</source><target>22</target></configuration></plugin>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.directory}/libs
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>22</source>
+                    <target>22</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <finalName>mrdcserver</finalName>
+                    <outputDirectory>target</outputDirectory>
+                    <archive>
+                        <addMavenDescriptor>true</addMavenDescriptor>
+                        <manifestEntries>
+                            <Application-Name>mrdcserver</Application-Name>
+                            <Permissions>all-permissions</Permissions>
+                            <Codebase>*</Codebase><addClasspath>true</addClasspath>
+                            <Caller-Allowable-Codebase> *.arkaine.net *.aikane.fr *</Caller-Allowable-Codebase>
+                        </manifestEntries>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <mainClass>fr.aikane.ServerImage</mainClass>
+                            <addClasspath>true</addClasspath>
+                            <addExtensions />
+                            <classpathPrefix />
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencyManagement>
+        <dependencies>
+            <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna -->
+            <dependency>
+                <groupId>net.java.dev.jna</groupId>
+                <artifactId>jna</artifactId>
+                <version>5.14.0</version>
+            </dependency>
 
-    </plugins>
-  </build>
-  <dependencyManagement>
-    <dependencies>
-      <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna -->
-      <dependency>
-        <groupId>net.java.dev.jna</groupId>
-        <artifactId>jna</artifactId>
-        <version>5.14.0</version>
-      </dependency>
-
-    </dependencies>
-  </dependencyManagement>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
 

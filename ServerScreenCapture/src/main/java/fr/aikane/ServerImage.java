@@ -1,5 +1,7 @@
 package fr.aikane;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
@@ -34,8 +36,8 @@ public class ServerImage {
                         System.out.println("Client connecté");
                         ServerImage.this.initRemote(socketServer);
 
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }
