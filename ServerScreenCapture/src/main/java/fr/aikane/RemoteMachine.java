@@ -70,11 +70,7 @@ public class RemoteMachine extends JFrame implements KeyListener {
         this.screen.setIcon(icone);
         this.screen.repaint();
         setSize(image.getWidth(), image.getHeight());
-        try {
-            ImageIO.write(image, "jpg", new File("img" + (new Date()).getTime() + ".jpg"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try
 
         try {
             is.close();

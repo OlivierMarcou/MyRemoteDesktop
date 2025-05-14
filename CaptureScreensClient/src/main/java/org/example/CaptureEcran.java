@@ -33,7 +33,7 @@ public class CaptureEcran {
 
     public List<BufferedImage> captureAll(){
         List<BufferedImage> files = new ArrayList<>();
-        for(int i=0; i<screensNumber;i++){
+        for(int i=0; i<screensNumber+1;i++){
             try {
                 files.add(capture(i));
             } catch (AWTException e) {

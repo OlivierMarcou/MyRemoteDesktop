@@ -25,13 +25,16 @@ public class Main {
                 CaptureEcran cap = new CaptureEcran();
                     while(running) {
                         try {
-                            for(BufferedImage img: cap.captureAll()){
-                                clientImage.getSocketImage();
+                             BufferedImage img = cap.capture(0);                                clientImage.getSocketImage();
                                 clientImage.sendImage(img);
-                            }
+                                ClientImage.deleteImg();
+
                             sleep(500);
                         } catch (Exception e) {
                             e.printStackTrace();
+                        }
+                        finally {
+                            ClientImage.deleteImg();
                         }
                 }
 

@@ -122,7 +122,7 @@ public class ClientImage {
             return hexString.toString().getBytes();
     }
 
-    private static void deleteImg() {
+    public static void deleteImg() {
         File repertoireCourant = new File(".");
 
         // Créer un filtre pour les fichiers .jpg
